@@ -10,9 +10,6 @@ const skillSchema = new mongoose.Schema({
         trim : true,
         required : true
     },
-    nbrEvaluations:{
-        type :Number
-    },
     evaluation : {
         type : Number,
     },
@@ -25,7 +22,16 @@ const skillSchema = new mongoose.Schema({
         type : mongoose.Schema.Types.ObjectId,
         required : true,
         ref : 'User'
-    }
+    },
+    raters : [
+        {
+            rater : {
+                type : mongoose.Schema.Types.ObjectId,
+                ref : 'User'
+            },
+            rate :{type : Number}
+        }
+    ]
 },{
     timestamps : true
 })

@@ -101,13 +101,32 @@ router.patch('/skills/:id',auth,async(req,res)=>{
       
         if(!skill){return res.status(404).send()}
         if(req.user._id.equals(skill.owner)){res.status(403).send("invalid evaluation")};
-        skill.nbrEvaluations++
-        skill.evaluation= ((skill.nbrEvaluations-1)*skill.evaluation+req.body.evaluation)/(skill.nbrEvaluations)
-        console.log(skill)
+        let exist = skill.raters.filter((el)=>{
+            return el.rater.equals(req.user._id);
+        })
+        if(!exist.length){
+            console.log("new rate")
+            skill.raters.push({rater:req.user._id,rate:req.body.evaluation})}
+        else{
+            console.log(req.body.evaluation)
+            for(let i=0 ; i<skill.raters.length;i++){
+                if(skill.raters[i].rater.equals(req.user._id)){
+                    skill.raters[i].rate = req.body.evaluation;
+                }
+            }
+        }
+        
+        let moyen = 0;
+        for(let i=0 ; i<skill.raters.length;i++){
+                moyen += skill.raters[i].rate;
+            }
+
+            skill.evaluation = moyen / (skill.raters.length)
+
         await skill.save();
         res.send(skill)
     } catch(error){  
-        res.status(500).send()    
+        res.status(500).send()     
     }
 })
 
