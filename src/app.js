@@ -5,6 +5,7 @@ var passport = require('passport');
 const app = express();
  const userRouter = require('./routers/user');
  const skillRouter = require('./routers/skill');
+ const historyRouter = require('./routers/history') 
 
 app.use(express.json()); //Incoming requests are objects ...  function
 
@@ -17,6 +18,7 @@ app.use(passport.session({
   }));
 app.use(userRouter);
 app.use(skillRouter) 
+app.use(historyRouter);
 
  
 module.exports = app; 

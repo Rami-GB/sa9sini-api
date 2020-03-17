@@ -57,20 +57,32 @@ const userSchema = new mongoose.Schema({
   },
   backgroundPict:{
       type:Buffer
-  }
-  /*,
-  facebook: {
-    id: String,
-    token: String,
-    email: String,
-    name: String
-  }
-  */
-
-
+  },
+  messages : [{
+         message : {
+             text : {
+                 type : String,
+                 trim : true
+             },
+             messageType:{
+                 type : String,
+                 validate(msg){
+                     if (msg !=='sent' && msg!=='recieved'){
+                         throw new Error("invalid message type")
+                     }
+                 }
+             }
+         },
+         owner : {
+            type : mongoose.Schema.Types.ObjectId,
+            ref : 'User'
+         }
+  }]
 },{
     timestamps:true
 })
+
+
 
 /*
 //Setting up relations (Facultative
@@ -80,6 +92,8 @@ userSchema.virtual('skills',{
     foreignField:"owner"
 })
 */
+
+
 
 userSchema.pre('save',async function(next){
     const user = this;

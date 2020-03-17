@@ -3,6 +3,7 @@
 const express = require('express');
 const router = new express.Router();
 const User = require('../models/user');
+const History = require('../models/history')
 const mail = require('../emails/account')
 const auth = require('../middlware/auth');
 
@@ -14,15 +15,23 @@ const uploadBack = require('../middlware/uploadBack');
 //Basiclly SignIn
 router.post('/users',async (req,res)=>{
     const user = new User(req.body);
-     
-    try {
-        const token = await user.generateAuthToken();
+    const history = new History({
+    messages :[{ 
+    message : "Welcome",
+    status : "recieved",
+    owner : "Admin"
+    }],
+      user : user._id
+    })
+    try { 
+        const token = await user.generateAuthToken(); 
         //Send Welcome Mail
-        await user.save();
+        await user.save(); 
+        await history.save()
         mail.sendWelcomeEmail(user)
-        res.status(201).send({user,token});
+        res.status(201).send({user,token,history});
       
-    } catch (error) {  
+    } catch (error) {   
         res.status(400).send(error)
     }
 })
@@ -227,7 +236,130 @@ router.patch('/users/me/backgroundPicture',auth,uploadBack.single('backgroundPic
 })
 
 
-//To add two routes to delete profile and background pictures
+//add message 
+
+router.patch('/users/chat')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

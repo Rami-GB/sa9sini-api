@@ -105,7 +105,6 @@ router.patch('/skills/:id',auth,async(req,res)=>{
             return el.rater.equals(req.user._id);
         })
         if(!exist.length){
-            console.log("new rate")
             skill.raters.push({rater:req.user._id,rate:req.body.evaluation})}
         else{
             console.log(req.body.evaluation)
