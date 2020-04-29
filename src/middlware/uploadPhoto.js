@@ -1,8 +1,8 @@
 const multer = require('multer');
 
-const uploadProfile = multer({
+const uploadBack = multer({
     limits : {
-        fileSize:1000000
+        fileSize:2000000
     },
     fileFilter(req,file,cb){
         if(!file.originalname.match(/\.(png|jpg|jpeg|svg)$/)){
@@ -15,4 +15,4 @@ const uploadProfile = multer({
 
 
 
-module.exports = uploadProfile;
+module.exports = uploadBack;

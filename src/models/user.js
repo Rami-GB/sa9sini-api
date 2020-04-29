@@ -6,80 +6,56 @@ const Skill = require('../models/skill');
 
 
 const userSchema = new mongoose.Schema({
-  userName:{
-      type:String,
-      trim:true,
-      required : true,
-      unique:true
-  },
-  firstName:{
-    type:String,
-    trim:true
-  },
-  lastName:{
-    type:String,
-    trim:true
-  },
-  email:{
-      type:String,
-      unique:true,
-      trim:true,
-      lowercase:true,
-      validate(value){
-          if(!validator.isEmail(value)){
-              throw new Error('Email is invalid');
-          }
-      }
-  },
-  password:{
-      type : String,
-      minlength:8,
-      trim:true
-  },
-  gender:{
-      type:String,
-      trim:true,
-      validate(value){
-          if(! (['male','female','not specific'].includes(value))){
-              throw new Error('Error gender');
-          }
-      }
-  },tokens:[
-      {
-          token:{
-              type:String,
-              required:true
-          } 
-      }
-  ],
-  profilePict:{
-      type:Buffer
-  },
-  backgroundPict:{
-      type:Buffer
-  },
-  messages : [{
-         message : {
-             text : {
-                 type : String,
-                 trim : true
-             },
-             messageType:{
-                 type : String,
-                 validate(msg){
-                     if (msg !=='sent' && msg!=='recieved'){
-                         throw new Error("invalid message type")
-                     }
-                 }
-             }
-         },
-         owner : {
-            type : mongoose.Schema.Types.ObjectId,
-            ref : 'User'
-         }
-  }]
-},{
-    timestamps:true
+    userName: {
+        type: String,
+        trim: true,
+        required: true,
+    },
+    email: {
+        type: String,
+        unique: true,
+        required: true,
+        trim: true,
+        lowercase: true,
+        validate(value) {
+            if (!validator.isEmail(value)) {
+                throw new Error('Email is invalid');
+            }
+        }
+    },
+    password: {
+        type: String,
+        minlength: 6,
+        trim: true
+    },
+    imgUrl: String,
+    backgroundUrl: String,
+    gender: {
+        type: String,
+        trim: true,
+        default: 'not specific',
+        validate(value) {
+            if (!(['male', 'female', 'not specific'].includes(value))) {
+                throw new Error('Error gender');
+            }
+        }
+    },
+    tokens: [
+        {
+            token: {
+                type: String,
+                required: true
+            }
+        }
+    ],
+    profilePict: {
+        type: Buffer
+    },
+    backgroundPict: {
+        type: Buffer
+    }
+}, {
+    timestamps: true
 })
 
 
@@ -95,50 +71,52 @@ userSchema.virtual('skills',{
 
 
 
-userSchema.pre('save',async function(next){
+userSchema.pre('save', async function (next) {
     const user = this;
-    if(user.isModified("password")){
-        user.password = await bcrypt.hash(user.password,8)
+    if (user.isModified("password")) {
+        user.password = await bcrypt.hash(user.password, 8)
     }
     next()
 })
 
-userSchema.pre('remove',function(next){
+userSchema.pre('remove', function (next) {
     const user = this;
-    Skill.deleteMany({owner : user._id})
+    Skill.deleteMany({ owner: user._id })
     next();
 })
 
 
-userSchema.methods.generateAuthToken = async function(){
+userSchema.methods.generateAuthToken = async function () {
     const user = this;
-    const token = jwt.sign({_id : user._id.toString()},process.env.JWT_SECRET)
-    user.tokens = user.tokens.concat({token})
+    const token = jwt.sign({ _id: user._id.toString() }, process.env.JWT_SECRET)
+    user.tokens.push({ token });
     return token;
 }
 
 
 //hide private data ...  monngoose the document to an object 
 // before it sends it back with res.send .
-userSchema.methods.toJSON =function (){ 
+userSchema.methods.toJSON = function () {
     const user = this
- 
-    const userObject = user.toObject();
-  
-    delete userObject.password;   
-    delete userObject.tokens;  
-    delete userObject.avatar;    
 
-    return userObject   
+    const userObject = user.toObject();
+
+    delete userObject.password;
+    delete userObject.tokens;
+    delete userObject.profilePict;
+    delete userObject.backgroundPict;
+
+    return userObject
 }
 
-userSchema.statics.findBycredentials = async (email,password)=>{
-    const user = await User.findOne({email});
-    if(!user){
+userSchema.statics.findBycredentials = async (email, password) => {
+    const user = await User.findOne({ email },
+        { userName: 1, email: 1, password: 1, gender: 1, tokens: 1, createdAt: 1, updatedAt: 1 })
+    if (!user) {
         throw new Error("Unable to login");
     }
-    const ismatch = await bcrypt.compare(password,user.password);
-    if(!ismatch){
+    const ismatch = await bcrypt.compare(password, user.password);
+    if (!ismatch) {
         throw new Error("Unable to login")
     }
 
@@ -146,8 +124,8 @@ userSchema.statics.findBycredentials = async (email,password)=>{
 }
 
 
- 
 
-const User = mongoose.model('User',userSchema);
+
+const User = mongoose.model('User', userSchema);
 
 module.exports = User;
