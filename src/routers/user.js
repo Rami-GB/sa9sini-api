@@ -19,8 +19,8 @@ router.post('/users', async (req, res) => {
     const profileDist = join(__dirname, '../helpers/default_avatar.jpg')
     const backgroundDist = join(__dirname, '../helpers/background.jpeg')
 
-    user.imgUrl = `https://saqsini.herokuapp.com/users/${user._id}/profilePicture`;
-    user.backgroundUrl = `https://saqsini.herokuapp.com/users/${user._id}/backgroundPicture`;
+    user.imgUrl = `https://cors-anywhere.herokuapp.com/https://saqsini.herokuapp.com/users/${user._id}/profilePicture`;
+    user.backgroundUrl = `https://cors-anywhere.herokuapp.com/https://saqsini.herokuapp.com/users/${user._id}/backgroundPicture`;
 
 
     user.profilePict = await sharp(profileDist)
