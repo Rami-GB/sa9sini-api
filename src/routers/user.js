@@ -220,6 +220,7 @@ router.get('/users/:id/profilePicture', auth, async (req, res) => {
     if (!profilePict) return res.status(404).send();
 
     res.set('Content-Type', 'image/jpeg');
+    res.set('Origin', 'https://saqsini.herokuapp.com')
     res.send(profilePict);
 })
 
