@@ -105,7 +105,7 @@ router.get('/users/me', auth, async (req, res) => {
 router.get('/users/:id', auth, async (req, res) => {
     try {
         const user = await User.findById({ _id: req.params.id },
-            { userName: 1, email: 1, password: 1, gender: 1, tokens: 1, createdAt: 1, updatedAt: 1 });
+            { userName: 1, email: 1, password: 1, gender: 1, tokens: 1, createdAt: 1, updatedAt: 1, imgUrl: 1, backgroundUrl: 1 });
 
         if (!user) { res.status(404).send("User not found") }
         res.send(user)
