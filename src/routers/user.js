@@ -214,7 +214,7 @@ router.get('/users/me/profilePicture', auth, async (req, res) => {
 })
 
 //GET others profile Picture
-router.get('/users/:id/profilePicture', auth, async (req, res) => {
+router.get('/users/:id/profilePicture', async (req, res) => {
     const { profilePict } = await User.findOne({ _id: req.params.id }, { profilePict: 1 });
 
     if (!profilePict) return res.status(404).send();
